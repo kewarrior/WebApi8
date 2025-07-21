@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebApi8.Data;
 using WebApi8.Models;
 
@@ -13,9 +14,29 @@ namespace WebApi8.Services.Autor
             
         }
 
-        public Task<ResponseModel<AutorModel>> BuscarAutorId(int idAutor)
+        public async Task<ResponseModel<AutorModel>> BuscarAutorId(int idAutor)
         {
-            throw new NotImplementedException();
+            ResponseModel<AutorModel> resposta = new ResponseModel<AutorModel>();
+            try
+            {
+                var autor = await _context.Autores.FirstOrDefaultAsync(autorBanco => autorBanco.Id == idAutor );
+
+                if (autor == null)
+                {
+                    resposta.Mensagem = " Nenhum autor existente";
+                    return resposta;
+                }
+
+                resposta.Dados = autor;
+                resposta.Mensagem = "Autor carregado";
+                return resposta;
+            }
+            catch (Exception ex)
+            {
+                resposta.Mensagem = ex.Message;
+                resposta.Status = false;
+                return resposta;
+            }
         }
 
         public Task<ResponseModel<AutorModel>> BuscarAutorIdLivro(int idLivro)
